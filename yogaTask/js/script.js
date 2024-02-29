@@ -34,4 +34,80 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
             }
         }
     })
+
+
+    //Timer
+    let deadline = '2024-03-01';
+
+    function getTimeRemaining(endTime) {
+        let t = Date.parse(endTime) - Date.parse(new Date);
+        let seconds = Math.floor((t / 1000) % 60),
+            minutes = Math.floor((t / 1000 / 60) % 60),
+            hours = Math.floor(t / (1000 * 60 * 60) - 3);
+        //Если нужны дни
+        //hours = Math.floor((t/1000/60/60)%24);
+        //days = Math.floor((t/(1000*60*60*24)));
+
+        console.log(t);
+        console.log(hours);
+        console.log(minutes);
+        console.log(seconds);
+
+        if (t <= 0) {
+            return {
+                'total': '00',
+                'hours': '00',
+                'minutes': '00',
+                'seconds': '00'
+            };
+
+        } else {
+
+            return {
+                'total': t,
+                'hours': hours,
+                'minutes': minutes,
+                'seconds': seconds
+            };
+        }
+    }
+
+    function setClock(id, endTime) {
+        let timer = document.getElementById(id),
+            hours = timer.querySelector('.hours'),
+            minutes = timer.querySelector('.minutes'),
+            seconds = timer.querySelector('.seconds'),
+            timeInterval = setInterval(updateClock, 1000);
+
+        function updateClock() {
+            let t = getTimeRemaining(endTime);
+            hours.textContent = t.hours;
+            minutes.textContent = t.minutes;
+            seconds.textContent = t.seconds;
+
+            if (t.total <= 0) {
+                clearInterval(timeInterval);
+            }
+
+            if (t.total == "00") {
+                clearInterval(timeInterval);
+            }
+
+            let reg = /\d/;
+            if (String(t.hours)[0].match(reg) && String(t.hours)[1] == undefined) {
+                hours.textContent = '0' + t.hours;
+            }
+            if (String(t.minutes)[0].match(reg) && String(t.minutes)[1] == undefined) {
+                minutes.textContent = '0' + t.minutes;
+            }
+            if (String(t.seconds)[0].match(reg) && (String(t.seconds)[1] == undefined)) {
+                seconds.textContent = '0' + t.seconds;
+            }
+
+
+
+        }
+    }
+
+    setClock('timer', deadline);
 });
