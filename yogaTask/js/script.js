@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
 
 
     //Timer
-    let deadline = '2024-03-01';
+    let deadline = '2024-04-01';
 
     function getTimeRemaining(endTime) {
         let t = Date.parse(endTime) - Date.parse(new Date);
@@ -47,11 +47,6 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
         //Если нужны дни
         //hours = Math.floor((t/1000/60/60)%24);
         //days = Math.floor((t/(1000*60*60*24)));
-
-        console.log(t);
-        console.log(hours);
-        console.log(minutes);
-        console.log(seconds);
 
         if (t <= 0) {
             return {
@@ -110,4 +105,37 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
     }
 
     setClock('timer', deadline);
+
+    //Modal window
+
+    let more = document.querySelector('.more'),
+        overlay = document.querySelector('.overlay'),
+        close = document.querySelectorAll('.popup-close');
+
+    function openWindow() {
+        overlay.style.display = 'block';
+        more.classList.add('more-splash');
+        document.body.style.overflow = 'hidden';
+    }
+
+    close.forEach(btn => {
+        btn.addEventListener('click', function () {
+            overlay.style.display = 'none';
+            btn.classList.remove('more-splash');
+            document.body.style.overflow = '';
+        });
+    });
+
+    more.addEventListener('click', function () {
+        openWindow();
+    });
+
+    let descButton = document.querySelectorAll('.description-btn');
+    descButton.forEach(btn => {
+        btn.addEventListener('click', function () {
+            openWindow();
+        });
+    });
+
+
 });
