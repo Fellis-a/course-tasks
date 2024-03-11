@@ -137,5 +137,66 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
         });
     });
 
+    //Form 
+
+    let message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся!',
+        failure: 'Что-то пошло не так...'
+    }
+
+    let form = document.querySelector('.main-form');
+    let input = document.getElementsByTagName('input');
+    let statusMessage = document.createElement('div');
+
+    statusMessage.classList.add('status');
+
+    form.addEventListener('submit', function (event) {
+        //чтобы предотвратить перезагрузку страницы при нажатии на кнопку отправки формы
+
+        event.preventDefault();
+        form.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        //заголовок, который говорит нам, что мы работаем с формой 
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        //чтобы не использовать json, можно через formdata прописать значения в формате ключ/значение
+
+        //Для использования json формата 
+        //request.setRequestHeader( 'Content-type', 'application/json; charset=utf-8');
+
+        let formData = new FormData(form);
+
+        //Если используется JSON
+        /* let obj = {};
+        formData.forEach(function (value, key) {
+        obj[key] = value;
+        });
+ 
+        let json = JSON.stringify(obj);
+ 
+        request.send(json);*/
+
+        request.send(formData);
+
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState === 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        }
+        );
+
+        for (let i = 0; 1 < input.length; i++) {
+            input[i].value = '';
+        }
+
+    })
+
 
 });
+
