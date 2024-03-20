@@ -109,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
     //Modal window
 
     let more = document.querySelector('.more'),
-        overlay = document.querySelector('.overlay'),
+        overlay = document.querySelector('.mainModal'),
         close = document.querySelectorAll('.popup-close');
 
     function openWindow() {
@@ -149,107 +149,115 @@ window.addEventListener('DOMContentLoaded', function () {//скрипты буд
     let input = document.getElementsByTagName('input');
     let statusMessage = document.createElement('div');
 
+    let thanksModal = document.querySelector('.thanksModal');
+    let contactForm = document.getElementById('form');
+
     statusMessage.classList.add('status');
 
-    form.addEventListener('submit', function (event) {
-        //чтобы предотвратить перезагрузку страницы при нажатии на кнопку отправки формы
+    // form.addEventListener('submit', function (event) {
+    //     //чтобы предотвратить перезагрузку страницы при нажатии на кнопку отправки формы
 
-        event.preventDefault();
-        form.appendChild(statusMessage);
+    //     event.preventDefault();
+    //     form.appendChild(statusMessage);
 
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        //заголовок, который говорит нам, что мы работаем с формой 
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        //чтобы не использовать json, можно через formdata прописать значения в формате ключ/значение
+    //     let request = new XMLHttpRequest();
+    //     request.open('POST', 'server.php');
+    //     //заголовок, который говорит нам, что мы работаем с формой 
+    //     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    //     //чтобы не использовать json, можно через formdata прописать значения в формате ключ/значение
 
-        //Для использования json формата 
-        //request.setRequestHeader( 'Content-type', 'application/json; charset=utf-8');
+    //     //Для использования json формата 
+    //     //request.setRequestHeader( 'Content-type', 'application/json; charset=utf-8');
 
-        let formData = new FormData(form);
+    //     let formData = new FormData(form);
 
-        //Если используется JSON
-        /* let obj = {};
-        formData.forEach(function (value, key) {
-        obj[key] = value;
-        });
- 
-        let json = JSON.stringify(obj);
- 
-        request.send(json);*/
+    //     //Если используется JSON
+    //     /* let obj = {};
+    //     formData.forEach(function (value, key) {
+    //     obj[key] = value;
+    //     });
 
-        request.send(formData);
+    //     let json = JSON.stringify(obj);
 
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
+    //     request.send(json);*/
+
+    //     request.send(formData);
+
+    //     request.addEventListener('readystatechange', function () {
+    //         if (request.readyState < 4) {
+    //             statusMessage.innerHTML = message.loading;
+    //         } else if (request.readyState === 4 && request.status == 200) {
+    //             statusMessage.innerHTML = message.success;
+    //         } else {
+    //             statusMessage.innerHTML = message.failure;
+    //         }
+    //     }
+    //     );
+
+    //     for (let i = 0; i < input.length; i++) {
+    //         input[i].value = '';
+    //     }
+
+    // })
+
+    function sendForm(elem) {
+        elem.addEventListener('submit', function (event) {
+            event.preventDefault();
+            elem.appendChild(statusMessage);
+            let formData = new FormData(elem);
+
+            function postData(data) {
+
+                return new Promise(function (resolve, reject) {
+                    let request = new XMLHttpRequest();
+                    request.open('POST', 'server.php');
+                    //заголовок, который говорит нам, что мы работаем с формой 
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    //чтобы не использовать json, можно через formdata прописать значения в формате ключ/значение
+
+                    request.onreadystatechange = function () {
+                        if (request.readyState < 4) {
+                            resolve()
+
+                        } else if (request.readyState === 4) {
+                            if (request.status < 300 && request.status == 200) {
+                                resolve()
+                            }
+                            else {
+                                reject()
+                            }
+
+                        }
+                    }
+                    request.send(data);
+                })
             }
-        }
-        );
 
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        }
+            function clearInput() {
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                }
+            }
+            postData(formData)
+                .then(() => statusMessage.innerHTML = message.loading)
+                .then(() => {
+                    overlay.style.display = 'none',
+                        thanksModal.style.display = 'block',
+                        statusMessage.innerHTML = message.success
+                })
+                .catch(() =>
+                    statusMessage.innerHTML = message.failure)
+                .then(clearInput)
 
-    })
+
+        });
+
+    }
+
 
     //contact form 
 
-    let contactForm = document.getElementById('form');
-
-    let inputContact = contactForm.getElementsByTagName('input');
-
-    statusMessage.classList.add('status');
-
-    contactForm.addEventListener('submit', function (event) {
-        //чтобы предотвратить перезагрузку страницы при нажатии на кнопку отправки формы
-
-        event.preventDefault();
-        contactForm.appendChild(statusMessage);
-
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        //заголовок, который говорит нам, что мы работаем с формой 
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        //чтобы не использовать json, можно через formdata прописать значения в формате ключ/значение
-
-        //Для использования json формата 
-        //request.setRequestHeader( 'Content-type', 'application/json; charset=utf-8');
-
-        let formData = new FormData(contactForm);
-
-        //Если используется JSON
-        /* let obj = {};
-        formData.forEach(function (value, key) {
-        obj[key] = value;
-        });
- 
-        let json = JSON.stringify(obj);
- 
-        request.send(json);*/
-
-        request.send(formData);
-
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
-            }
-        }
-        );
-
-        for (let i = 0; i < inputContact.length; i++) {
-            inputContact[i].value = '';
-        }
-
-    })
-
+    sendForm(form);
+    sendForm(contactForm);
 });
 
